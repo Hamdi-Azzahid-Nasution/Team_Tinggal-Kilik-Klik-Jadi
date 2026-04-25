@@ -1,7 +1,9 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import {
+  Alert,
   Keyboard,
   ScrollView,
   StyleSheet,
@@ -12,15 +14,23 @@ import {
   View,
 } from 'react-native';
 
-export default function MasukScreen() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+export default function ResetPasswordScreen() {
+  const [passwordBaru, setPasswordBaru] = useState('');
+  const [konfirmasi, setKonfirmasi] = useState('');
+  const [showPasswordBaru, setShowPasswordBaru] = useState(false);
+  const [showKonfirmasi, setShowKonfirmasi] = useState(false);
 
   const handleSimpan = () => {
+    if (!passwordBaru || !konfirmasi) return;
+    if (passwordBaru !== konfirmasi) {
+      Alert.alert('Password tidak cocok', 'Pastikan kedua password sama.');
+      return;
+    }
     Keyboard.dismiss();
-    // TODO: logika auth di sini
-    router.replace('/(tabs)');
+    // TODO: kirim reset password ke server
+    Alert.alert('Berhasil!', 'Password berhasil diubah.', [
+      { text: 'Masuk', onPress: () => router.replace('/(auth)/masuk') },
+    ]);
   };
 
   return (
@@ -42,64 +52,74 @@ export default function MasukScreen() {
               <Text style={styles.backArrow}>‹</Text>
             </TouchableOpacity>
             <View style={styles.headerText}>
-              <Text style={styles.headerTitle}>Masuk Akun</Text>
-              <Text style={styles.headerSubtitle}>Inputkan email dan password anda</Text>
+              <Text style={styles.headerTitle}>Atur Ulang Password</Text>
+              <Text style={styles.headerSubtitle}>
+                Password baru harus berbeda dari{'\n'}password yang digunakan sebelumnya
+              </Text>
             </View>
           </View>
 
           {/* Form */}
           <View style={styles.form}>
-            {/* Email */}
-            <Text style={styles.label}>Email</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="lekaleka@gmail.com"
-              placeholderTextColor="#BBBBBB"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoCorrect={false}
-              returnKeyType="next"
-            />
-
-            {/* Password */}
-            <Text style={[styles.label, { marginTop: 20 }]}>Password</Text>
-            <View style={styles.passwordWrapper}>
+            {/* Password Baru */}
+            <Text style={styles.label}>Password Baru</Text>
+            <View style={styles.inputWrapper}>
+              <Ionicons name="lock-closed-outline" size={18} color="#AAAAAA" style={styles.inputIcon} />
               <TextInput
-                style={styles.passwordInput}
+                style={styles.inputField}
                 placeholder="*******"
                 placeholderTextColor="#BBBBBB"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry={!showPassword}
+                value={passwordBaru}
+                onChangeText={setPasswordBaru}
+                secureTextEntry={!showPasswordBaru}
+                autoCapitalize="none"
+                returnKeyType="next"
+              />
+              <TouchableOpacity onPress={() => setShowPasswordBaru(!showPasswordBaru)} style={styles.eyeBtn}>
+                <Ionicons
+                  name={showPasswordBaru ? 'eye-outline' : 'eye-off-outline'}
+                  size={20}
+                  color="#AAAAAA"
+                />
+              </TouchableOpacity>
+            </View>
+
+            {/* Konfirmasi Password */}
+            <Text style={styles.label}>Konfirmasi Password</Text>
+            <View style={styles.inputWrapper}>
+              <Ionicons name="lock-closed-outline" size={18} color="#AAAAAA" style={styles.inputIcon} />
+              <TextInput
+                style={styles.inputField}
+                placeholder="*******"
+                placeholderTextColor="#BBBBBB"
+                value={konfirmasi}
+                onChangeText={setKonfirmasi}
+                secureTextEntry={!showKonfirmasi}
                 autoCapitalize="none"
                 returnKeyType="done"
                 onSubmitEditing={Keyboard.dismiss}
               />
-              <TouchableOpacity
-                onPress={() => setShowPassword(!showPassword)}
-                style={styles.eyeBtn}
-              >
-                <Text style={styles.eyeIcon}>{showPassword ? '🙈' : '👁'}</Text>
+              <TouchableOpacity onPress={() => setShowKonfirmasi(!showKonfirmasi)} style={styles.eyeBtn}>
+                <Ionicons
+                  name={showKonfirmasi ? 'eye-outline' : 'eye-off-outline'}
+                  size={20}
+                  color="#AAAAAA"
+                />
               </TouchableOpacity>
             </View>
 
-            {/* Lupa Password */}
-            <TouchableOpacity
-              style={styles.lupaBtn}
-              onPress={() => router.push('/(auth)/lupa-password')}
-            >
+            {/* Lupa Password link */}
+            <TouchableOpacity style={styles.lupaBtn}>
               <Text style={styles.lupaText}>Lupa Password?</Text>
             </TouchableOpacity>
 
-            {/* Simpan Button */}
+            {/* Simpan */}
             <TouchableOpacity
-              style={styles.simpanBtn}
+              style={[styles.btn, (!passwordBaru || !konfirmasi) && styles.btnDisabled]}
               onPress={handleSimpan}
               activeOpacity={0.85}
             >
-              <Text style={styles.simpanText}>SIMPAN</Text>
+              <Text style={styles.btnText}>SIMPAN</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -120,7 +140,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: 14,
-    marginBottom: 48,
+    marginBottom: 56,
   },
   backBtn: {
     width: 40,
@@ -147,11 +167,12 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: '700',
     color: '#1A1A1A',
-    marginBottom: 2,
+    marginBottom: 4,
   },
   headerSubtitle: {
     fontSize: 13,
     color: '#666666',
+    lineHeight: 20,
   },
   form: { width: '100%' },
   label: {
@@ -160,50 +181,37 @@ const styles = StyleSheet.create({
     color: '#1A1A1A',
     marginBottom: 8,
   },
-  input: {
-    width: '100%',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 14,
-    paddingVertical: 18,
-    paddingHorizontal: 20,
-    fontSize: 15,
-    color: '#1A1A1A',
-    shadowColor: '#000',
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
-  },
-  passwordWrapper: {
+  inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
     borderRadius: 14,
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
+    marginBottom: 20,
     shadowColor: '#000',
     shadowOpacity: 0.06,
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 2 },
     elevation: 2,
   },
-  passwordInput: {
+  inputIcon: { marginRight: 10 },
+  inputField: {
     flex: 1,
     paddingVertical: 18,
     fontSize: 15,
     color: '#1A1A1A',
   },
   eyeBtn: { padding: 4 },
-  eyeIcon: { fontSize: 18 },
   lupaBtn: {
     alignSelf: 'flex-end',
-    marginTop: 10,
     marginBottom: 32,
   },
   lupaText: {
     fontSize: 13,
+    fontWeight: '700',
     color: '#555555',
   },
-  simpanBtn: {
+  btn: {
     width: '100%',
     backgroundColor: '#82D4F0',
     borderRadius: 16,
@@ -215,7 +223,12 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     elevation: 4,
   },
-  simpanText: {
+  btnDisabled: {
+    backgroundColor: '#B0E4F5',
+    shadowOpacity: 0,
+    elevation: 0,
+  },
+  btnText: {
     fontSize: 15,
     fontWeight: '700',
     color: '#3A3A3A',

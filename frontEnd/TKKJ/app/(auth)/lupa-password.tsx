@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import {
   Keyboard,
   ScrollView,
@@ -12,15 +13,14 @@ import {
   View,
 } from 'react-native';
 
-export default function MasukScreen() {
+export default function LupaPasswordScreen() {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
 
-  const handleSimpan = () => {
+  const handlePulihkan = () => {
+    if (!email) return;
     Keyboard.dismiss();
-    // TODO: logika auth di sini
-    router.replace('/(tabs)');
+    // TODO: kirim email reset password
+    router.push('/(auth)/verif-email');
   };
 
   return (
@@ -42,64 +42,38 @@ export default function MasukScreen() {
               <Text style={styles.backArrow}>‹</Text>
             </TouchableOpacity>
             <View style={styles.headerText}>
-              <Text style={styles.headerTitle}>Masuk Akun</Text>
-              <Text style={styles.headerSubtitle}>Inputkan email dan password anda</Text>
+              <Text style={styles.headerTitle}>Lupa Password</Text>
+              <Text style={styles.headerSubtitle}>
+                Masukkan email yang berhubungan dengan{'\n'}akun anda
+              </Text>
             </View>
           </View>
 
           {/* Form */}
           <View style={styles.form}>
-            {/* Email */}
             <Text style={styles.label}>Email</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="lekaleka@gmail.com"
-              placeholderTextColor="#BBBBBB"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoCorrect={false}
-              returnKeyType="next"
-            />
-
-            {/* Password */}
-            <Text style={[styles.label, { marginTop: 20 }]}>Password</Text>
-            <View style={styles.passwordWrapper}>
+            <View style={styles.inputWrapper}>
+              <Ionicons name="mail-outline" size={18} color="#AAAAAA" style={styles.inputIcon} />
               <TextInput
-                style={styles.passwordInput}
-                placeholder="*******"
+                style={styles.inputField}
+                placeholder="lekaleka@gmail.com"
                 placeholderTextColor="#BBBBBB"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry={!showPassword}
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
                 autoCapitalize="none"
+                autoCorrect={false}
                 returnKeyType="done"
                 onSubmitEditing={Keyboard.dismiss}
               />
-              <TouchableOpacity
-                onPress={() => setShowPassword(!showPassword)}
-                style={styles.eyeBtn}
-              >
-                <Text style={styles.eyeIcon}>{showPassword ? '🙈' : '👁'}</Text>
-              </TouchableOpacity>
             </View>
 
-            {/* Lupa Password */}
             <TouchableOpacity
-              style={styles.lupaBtn}
-              onPress={() => router.push('/(auth)/lupa-password')}
-            >
-              <Text style={styles.lupaText}>Lupa Password?</Text>
-            </TouchableOpacity>
-
-            {/* Simpan Button */}
-            <TouchableOpacity
-              style={styles.simpanBtn}
-              onPress={handleSimpan}
+              style={[styles.btn, !email && styles.btnDisabled]}
+              onPress={handlePulihkan}
               activeOpacity={0.85}
             >
-              <Text style={styles.simpanText}>SIMPAN</Text>
+              <Text style={styles.btnText}>PULIHKAN PASSWORD</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -120,7 +94,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: 14,
-    marginBottom: 48,
+    marginBottom: 56,
   },
   backBtn: {
     width: 40,
@@ -147,11 +121,12 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: '700',
     color: '#1A1A1A',
-    marginBottom: 2,
+    marginBottom: 4,
   },
   headerSubtitle: {
     fontSize: 13,
     color: '#666666',
+    lineHeight: 20,
   },
   form: { width: '100%' },
   label: {
@@ -160,50 +135,27 @@ const styles = StyleSheet.create({
     color: '#1A1A1A',
     marginBottom: 8,
   },
-  input: {
-    width: '100%',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 14,
-    paddingVertical: 18,
-    paddingHorizontal: 20,
-    fontSize: 15,
-    color: '#1A1A1A',
-    shadowColor: '#000',
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
-  },
-  passwordWrapper: {
+  inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
     borderRadius: 14,
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
+    marginBottom: 32,
     shadowColor: '#000',
     shadowOpacity: 0.06,
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 2 },
     elevation: 2,
   },
-  passwordInput: {
+  inputIcon: { marginRight: 10 },
+  inputField: {
     flex: 1,
     paddingVertical: 18,
     fontSize: 15,
     color: '#1A1A1A',
   },
-  eyeBtn: { padding: 4 },
-  eyeIcon: { fontSize: 18 },
-  lupaBtn: {
-    alignSelf: 'flex-end',
-    marginTop: 10,
-    marginBottom: 32,
-  },
-  lupaText: {
-    fontSize: 13,
-    color: '#555555',
-  },
-  simpanBtn: {
+  btn: {
     width: '100%',
     backgroundColor: '#82D4F0',
     borderRadius: 16,
@@ -215,7 +167,12 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     elevation: 4,
   },
-  simpanText: {
+  btnDisabled: {
+    backgroundColor: '#B0E4F5',
+    shadowOpacity: 0,
+    elevation: 0,
+  },
+  btnText: {
     fontSize: 15,
     fontWeight: '700',
     color: '#3A3A3A',
