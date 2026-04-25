@@ -128,9 +128,15 @@ export default function ScreeningDengarkanKataScreen() {
   };
 
   const handleLanjut = () => {
-    sound?.unloadAsync();
-    router.push('/(screening)/soal-2'); // ganti route sesuai soal berikutnya
-  };
+  // Cek apakah input adalah "bata" (case insensitive)
+  const isCorrect = jawaban.toLowerCase().trim() === "bata";
+  const currentScore = isCorrect ? 1 : 0;
+
+  router.push({
+    pathname: '/(screening)/soal-2',
+    params: { score: currentScore }
+  });
+};
 
   const handleClose = () => {
     sound?.unloadAsync();
