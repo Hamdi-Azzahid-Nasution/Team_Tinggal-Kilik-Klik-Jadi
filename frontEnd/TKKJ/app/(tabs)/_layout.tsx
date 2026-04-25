@@ -44,6 +44,7 @@ export default function TabLayout() {
           borderTopRightRadius: 20,
           position: 'absolute',
           borderTopWidth: 0,
+          backgroundColor: '#FFFFFF', // ← INI YANG KURANG
         },
         headerShown: false,
       }}
@@ -53,39 +54,25 @@ export default function TabLayout() {
         options={{
           title: 'Home',
           tabBarIcon: ({ focused, color }) => (
-            <TabIcon
-              name={focused ? 'home' : 'home-outline'}
-              focused={focused}
-              color={color}
-            />
+            <TabIcon name={focused ? 'home' : 'home-outline'} focused={focused} color={color} />
           ),
         }}
       />
-
       <Tabs.Screen
         name="report"
         options={{
           title: 'Report',
           tabBarIcon: ({ focused, color }) => (
-            <TabIcon
-              name={focused ? 'stats-chart' : 'stats-chart-outline'}
-              focused={focused}
-              color={color}
-            />
+            <TabIcon name={focused ? 'stats-chart' : 'stats-chart-outline'} focused={focused} color={color} />
           ),
         }}
       />
-
       <Tabs.Screen
         name="profile"
         options={{
           title: 'Profil',
           tabBarIcon: ({ focused, color }) => (
-            <TabIcon
-              name={focused ? 'person' : 'person-outline'}
-              focused={focused}
-              color={color}
-            />
+            <TabIcon name={focused ? 'person' : 'person-outline'} focused={focused} color={color} />
           ),
         }}
       />
